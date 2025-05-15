@@ -1,0 +1,21 @@
+.app-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #eaeaea;
+  padding: 10px 0;
+  position: fixed; /* keep header visible */
+  top: 0;
+  z-index: 100%;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  text-align: center; /* Center the title for now*/
+}
+
+/*add flexbox to header container here*/
+.app-header .container {
+  display: flex;
+  justify-content: center; /* center for now*/
+  align-items: center;
+}
