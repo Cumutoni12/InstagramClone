@@ -16,7 +16,7 @@ function AuthForm({ type, onSubmit, error, loading }) {
 
   return (
     <div className="auth-form-container">
-      <h2>{type === "signup" ? "Sign Up" : "Login"}</h2>
+      <h2>{type === "Log" ? "Sign Up" : "Sign up "}</h2>
       {error && <div className="error-message">{error}</div>}
 
       <form onSubmit={handleSubmit} className="auth-form">
@@ -39,7 +39,7 @@ function AuthForm({ type, onSubmit, error, loading }) {
             onChange={(e) => setPassword(e.target.value)}
             disabled={loading}
             autoComplete={
-              type === "signup" ? "new-password" : "current-password"
+              type === "Log in " ? "new-password" : "current-password"
             }
           />
         </div>
