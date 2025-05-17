@@ -4,7 +4,7 @@ function Footer() {
   return (
     <footer className="app-footer">
       <div className="Container">
-        <p>&copy; 2025</p>
+        <p>&copy; 2025 InstagramClone </p>
       </div>
     </footer>
   );

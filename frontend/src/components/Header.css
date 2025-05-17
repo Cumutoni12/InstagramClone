@@ -4,7 +4,8 @@
   padding: 10px 0;
   position: fixed; /* keep header visible */
   top: 0;
-  z-index: 100%;
+  z-index: 100;
+  width: 100%;
 }
 
 .app-header h1 {
@@ -18,4 +19,7 @@
   display: flex;
   justify-content: center; /* center for now*/
   align-items: center;
+  max-width: 935px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
