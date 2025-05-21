@@ -6,34 +6,35 @@ import "./App.css";
 import "./components/header.css";
 import "./components/Footer.css";
 import "./components/AuthForm.css";
+import { useAuth } from "./context/AuthContext.jsx";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showSignUp, setShowSignUp] = useState(false);
+  const { isAuthenticated, user, loading: authLoading, logout } = useAuth(); // Get state and functions from context
+  const [showSignUp, setShowSignUp] = useState(false); // Still needed for toggling forms
 
-  const handleAuthSubmit = (formData) => {
-    console.log("Form submitted", formData);
-    if (!formData.error) {
-      console.log("Simulating successful auth");
-      setIsAuthenticated(true);
-    }
-  };
+  // If auth is still loading (checking local storage), show a loading state
+  if (authLoading) {
+    return <div className="loading-screen">Loading...</div>; // Add basic loading screen style
+  }
 
   return (
     <div className="app-container">
-      <Header />
+      <Header user={user} onLogout={logout} />{" "}
+      {/* Pass user and logout to Header */}
       <main className="app-main container">
         {isAuthenticated ? (
           <div>
-            <h2>Welcome! You are logged in.</h2>
-            <button onClick={() => setIsAuthenticated(false)}>Logout</button>
+            {/* Placeholder for authenticated content (Feed/Profile) */}
+            <h2>Welcome, {user?.username}!</h2> {/* Display username */}
+            <p>You are logged in.</p>
+            {/* Feed and other components will go here */}
           </div>
         ) : (
           <div className="auth-page-content">
             {showSignUp ? (
-              <AuthForm type="signup" onSubmit={handleAuthSubmit} />
+              <AuthForm type="signup" /> // No onSubmit needed here anymore
             ) : (
-              <AuthForm type="login" onSubmit={handleAuthSubmit} />
+              <AuthForm type="login" /> // No onSubmit needed here anymore
             )}
             <div className="auth-switch">
               {showSignUp ? (
