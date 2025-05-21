@@ -35,3 +35,41 @@ body {
   margin: 0 auto;
   padding-top: 20px; /* Add some space from the top */
 }
+
+.app-header .container {
+  display: flex;
+  justify-content: space-between; /* Space between left and right */
+  align-items: center;
+  max-width: 935px; /* Match app container width */
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.header-left h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  /* Optional: style like Instagram logo text */
+}
+
+.user-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Space between items */
+}
+
+.user-controls span {
+  font-weight: bold;
+}
+
+.logout-button {
+  background: none;
+  border: none;
+  color: #0095f6;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  font-weight: bold;
+}
+.logout-button:hover {
+  text-decoration: underline;
+}
