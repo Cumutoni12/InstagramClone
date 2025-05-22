@@ -2,9 +2,52 @@ from flask import Flask, jsonify, request,g
 from flask_cors import CORS
 import sqlite3
 import os
-from datetime import datetime
-from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
+from datetime import datetime,timedelta
+from functools import wraps #need this for decorators
+from werkzeug.security import generate_password_hash, check_password_hash
+
+def token_required(f):
+    @wraps(f) # Preserves original function's metadata
+    def decorated(*args, **kwargs):
+        token = None
+        # JWT is typically sent in the Authorization header as "Bearer <token>"
+        if 'Authorization' in request.headers:
+            auth_header = request.headers['Authorization']
+            try:
+                token = auth_header.split(' ')[1] # Get token part after "Bearer "
+            except IndexError:
+                pass # Malformed header, token remains None
+
+        if not token:
+            return jsonify({'message': 'Token is missing!'}), 401 # Unauthorized
+
+        try:
+            # Decode the token
+            # This will raise an exception if the token is invalid or expired
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            # Get the user from the database based on token payload
+            db = get_db()
+            c = db.cursor()
+            c.execute("SELECT id, username FROM users WHERE id = ?", (data['user_id'],))
+            current_user = c.fetchone()
+
+            if not current_user:
+                return jsonify({'message': 'User not found!'}), 401 # Unauthorized, user from token not found
+
+        except jwt.ExpiredSignatureError:
+            return jsonify({'message': 'Token has expired!'}), 401 # Unauthorized
+        except jwt.InvalidTokenError:
+             return jsonify({'message': 'Token is invalid!'}), 401 # Unauthorized
+        except Exception as e:
+             print(f"Token verification error: {e}")
+             return jsonify({'message': 'An error occurred during token verification!'}), 500
+
+        # Pass the authenticated user to the decorated function
+        return f(current_user, *args, **kwargs)
+
+    return decorated
+
 
 app= Flask(__name__)
 CORS(app) #allow requests from frontend 
@@ -67,11 +110,23 @@ def signup():
         # Optionally fetch the newly created user's ID for the token
         user_id = c.lastrowid
 
-        # Generate JWT token (optional for basic auth flow)
-        # We will add JWT token generation and verification on Day 7
+          # Generate JWT Token
+        token_payload = {
+                    'user_id': user_id,
+                    'username': username,
+                    'exp': datetime.utcnow() + timedelta(days=1) # Token expires in 1 day
+                }
+        token = jwt.encode(token_payload, app.config['SECRET_KEY'], algorithm='HS256')
 
-        return jsonify({'message': 'User created successfully', 'username': username}), 201 # Return username for simplicity initially
-
+        return jsonify({
+                    'message': 'User created successfully',
+                    'username': username,
+                    'token': token # Return the token
+                }), 201
+    
+    except sqlite3.IntegrityError: # Handle unique constraint error
+         return jsonify({'message': 'Username already exists'}), 409
+        
     except Exception as e:
          print(f"Error during signup: {e}")
          return jsonify({'message': 'An error occurred during signup'}), 500
@@ -93,14 +148,23 @@ def login():
 
     if user and check_password_hash(user['password'], password):
         # Authentication successful
-        # Generate JWT token (Day 7)
-        # For now, just return success
-         return jsonify({'message': 'Login successful', 'username': user['username']}), 200 # Return username
+        # Generate JWT Token
+        token_payload = {
+            'user_id': user['id'],
+            'username': user['username'],
+            'exp': datetime.utcnow() + timedelta(days=1) # Token expires in 1 day
+        }
+        token = jwt.encode(token_payload, app.config['SECRET_KEY'], algorithm='HS256')
 
+        return jsonify({
+            'message': 'Login successful',
+            'username': user['username'],
+            'token': token # Return the token
+        }), 200
+        
     else:
         return jsonify({'message': 'Invalid credentials'}), 401
 
-    # We will add JWT token generation and verification on Day 7
 
 @app.route('/')
 

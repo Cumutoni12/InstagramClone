@@ -10,12 +10,12 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     // Check for stored user/token on initial load
     const storedUser = localStorage.getItem("instaCloneUser");
-    // const storedToken = localStorage.getItem("instaCloneToken"); // Will use token later
+    const storedToken = localStorage.getItem("instaCloneToken"); // Will use token later
 
-    if (storedUser) {
+    if (storedUser && storedToken) {
       // For now, just set user based on username.
       // Later, we'll validate the token.
-      setUser({ username: storedUser /*, token: storedToken */ });
+      setUser({ username: storedUser, token: storedToken });
     }
 
     setLoading(false); // Finished checking
@@ -23,9 +23,10 @@ export function AuthProvider({ children }) {
 
   const login = ({ username, token }) => {
     // Accept token even if not used immediately
-    setUser({ username /*, token */ });
+    setUser({ username, token });
     localStorage.setItem("instaCloneUser", username);
     localStorage.setItem("instaCloneToken", token); // Store token for later
+    console.log(token);
   };
 
   const logout = () => {
