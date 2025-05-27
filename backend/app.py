@@ -173,7 +173,41 @@ def index():
 
 #add signup,login,and basic posts routes here in the next steps 
 
+@app.route('/posts', methods=['GET'])
+def get_posts():
+    db = get_db()
+    c = db.cursor()
+
+    # Select posts, joining with users to get author's username
+    # Order by creation date descending (newest first)
+    c.execute("""
+        SELECT
+            p.id, p.user_id, p.image_url, p.caption, p.created_at,
+            u.username AS author_username
+        FROM posts p
+        JOIN users u ON p.user_id = u.id
+        ORDER BY p.created_at DESC
+    """)
+    posts = c.fetchall() # Get all rows
+
+    # Convert rows to a list of dictionaries
+    posts_list = []
+    for post in posts:
+         posts_list.append({
+             'id': post['id'],
+             'userId': post['user_id'],
+             'imageUrl': post['image_url'],
+             'caption': post['caption'],
+             'createdAt': post['created_at'],
+             'authorUsername': post['author_username'],
+             'likesCount': 0, # Placeholder for now
+             'commentsCount': 0 # Placeholder for now
+         })
+
+    return jsonify(posts_list)
+
 if __name__ =='__main__':
+    
     #initialize db if it does not exisit 
 
     if not os.path.exists(DATABASE):

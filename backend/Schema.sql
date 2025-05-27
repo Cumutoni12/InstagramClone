@@ -10,6 +10,15 @@ CREATE TABLE users(
     create_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL, -- Foreign key to users
+    image_url TEXT NOT NULL, -- URL of the image
+    caption TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
 CREATE TABLE likes(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,--FOREIGN key to users 
