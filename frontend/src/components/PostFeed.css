@@ -1,0 +1,10 @@
+.post-feed {
+  padding-top: 40px; /* Space below header */
+  padding-bottom: 40px; /* Space above footer */
+}
+
+.feed-message {
+   text-align: center;
+   margin-top: 50px;
+   color: #8e8e8e;
+}
