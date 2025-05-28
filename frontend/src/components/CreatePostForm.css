@@ -1,0 +1,68 @@
+.create-post-container {
+  background-color: #ffffff;
+  border: 1px solid #dbdbdb;
+  margin: 40px auto; /* Center and add space */
+  padding: 20px;
+  max-width: 600px;
+}
+
+.create-post-container h3 {
+  margin-top: 0;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #262626;
+}
+
+.create-post-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.create-post-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.create-post-form label {
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: #262626;
+}
+
+.create-post-form input[type="text"],
+.create-post-form textarea {
+  padding: 10px;
+  border: 1px solid #dbdbdb;
+  border-radius: 3px;
+  background-color: #fafafa;
+  font-size: 1rem;
+  font-family: inherit; /* Use app font */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.create-post-form button {
+  /* Reuse button styles from AuthForm or create new ones */
+  width: 100%;
+  padding: 8px;
+  background-color: #0095f6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.create-post-form button:hover:not(:disabled) {
+  background-color: #0078d7;
+}
+
+.create-post-form button:disabled {
+  background-color: rgba(0, 149, 246, 0.3);
+  cursor: not-allowed;
+}
+
+/* Reuse .error-message style from AuthForm.css */
