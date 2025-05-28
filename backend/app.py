@@ -178,14 +178,16 @@ def get_posts():
     db = get_db()
     c = db.cursor()
 
-    # Select posts, joining with users to get author's username
-    # Order by creation date descending (newest first)
+    # Select posts, join users for author, LEFT JOIN likes and group to count likes
     c.execute("""
         SELECT
             p.id, p.user_id, p.image_url, p.caption, p.created_at,
-            u.username AS author_username
+            u.username AS author_username,
+            COUNT(l.id) AS likes_count -- Count likes for each post
         FROM posts p
         JOIN users u ON p.user_id = u.id
+        LEFT JOIN likes l ON p.id = l.post_id -- LEFT JOIN to include posts with 0 likes
+        GROUP BY p.id -- Group by post to count likes for each
         ORDER BY p.created_at DESC
     """)
     posts = c.fetchall() # Get all rows
@@ -200,15 +202,126 @@ def get_posts():
              'caption': post['caption'],
              'createdAt': post['created_at'],
              'authorUsername': post['author_username'],
-             'likesCount': 0, # Placeholder for now
+             'likesCount': post['likes_count'], # Use the count from the query
              'commentsCount': 0 # Placeholder for now
          })
 
     return jsonify(posts_list)
 
-if __name__ =='__main__':
+@app.route('/posts', methods=['POST'])
+
+@token_required # protect tgus endpoint-only authenticated users can create posts
+def create_post(current_user):
+    data = request.json
+    image_url = data.get('imageUrl') 
+    caption = data.get('caption',) #caption is optional
+
+    if not image_url or not image_url.strip():
+        return jsonify({'message': 'Image URL is required'}), 400
+
+    db = get_db()
+    c = db.cursor()
+
+    try:
+        # Insert new post
+        c.execute("INSERT INTO posts (user_id, image_url, caption) VALUES (?, ?, ?)",
+                  (current_user['id'], image_url, caption))
+        db.commit()
+
+        # Optionally fetch the newly created post's ID
+        post_id = c.lastrowid
+        c.execute(""" select p.id,p.user_id, p.image_url, p.caption, p.created_at,u.username as author_username from posts p join users u on p.user_id = u.id where p.id = ?""",(post_id,))
+
     
-    #initialize db if it does not exisit 
+        new_post = c.fetchone()
+
+        if new_post:
+            new_post_dict = {
+                'id': new_post['id'],
+                'userId': new_post['user_id'],
+                'imageUrl': new_post['image_url'],
+                'caption': new_post['caption'],
+                'createdAt': new_post['created_at'],
+                'authorUsername': new_post['author_username'],
+                'likesCount': 0, # Placeholder for now
+                'commentsCount': 0 # Placeholder for now
+            }
+
+            return jsonify(new_post_dict),201#retun the created post
+        else:
+            return jsonify({'message': 'Post created successfully', 'post': new_post}), 201 
+
+    except Exception as e:
+        print(f"Error creating post: {e}")
+        return jsonify({'message': 'An error occurred while creating the post'}), 500
+
+@app.route('/posts/<int:post_id>/like', methods=['POST'])
+@token_required #protect this endpoint
+def like_post(current_user, post_id):
+    db = get_db()
+    c = db.cursor()
+    user_id = current_user['id']
+    # Validate post_id
+
+    try:
+        c.execute("SELECT id FROM posts WHERE id = ?", (post_id,))
+        if c.fetchone() is None:
+            return jsonify({'message': 'Post not found'}), 404
+        
+        # Check if the user has already liked this post
+        c.execute("SELECT id FROM likes WHERE user_id = ? AND post_id = ?", (current_user['id'], post_id))
+        if c.fetchone() is not None:
+            return jsonify({'message': 'You have already liked this post'}), 400
+        
+        # Insert like 
+        c.execute("INSERT INTO likes (user_id, post_id) VALUES (?, ?)", (user_id, post_id))
+        db.commit() 
+        c.execute("SELECT COUNT(id) as likes_count FROM likes WHERE post_id = ?", (post_id,))
+        likes_count = c.fetchone()['likes_count']
+        return jsonify({'message': 'Post liked successfully', 'likesCount': likes_count}), 200
+
+    except Exception as e:
+        print(f"Error liking/unliking post: {e}")
+        return jsonify({'message': 'An error occurred while liking/unliking the post'}), 500
+
+@app.route('/posts/<int:post_id>/unlike', methods=['DELETE'])
+@token_required #protect this endpoint  
+def unlike_post(current_user, post_id):
+    db = get_db()
+    c = db.cursor()
+    user_id = current_user['id']
+
+    try:
+        # Check if the post exists
+        c.execute("SELECT id FROM posts WHERE id = ?", (post_id,))
+        if c.fetchone() is None:
+            return jsonify({'message': 'Post not found'}), 404
+        
+        # Check if the user has liked this post
+        c.execute("SELECT id FROM likes WHERE user_id = ? AND post_id = ?", (user_id, post_id))
+        like = c.fetchone()
+        if like is None:
+            return jsonify({'message': 'You have not liked this post'}), 400
+        
+        # Delete the like
+        c.execute("DELETE FROM likes WHERE id = ?", (like['id'],))
+        db.commit()
+
+        # return updated likes count
+        c.execute("SELECT COUNT(id) as likes_count FROM likes WHERE post_id = ?", (post_id,))
+        likes_count = c.fetchone()['likes_count']
+        
+        return jsonify({'message': 'Post unliked successfully', 'likesCount': likes_count}), 200
+
+    except Exception as e:
+        print(f"Error unliking post: {e}")
+        db.rollback()  # Rollback in case of error
+        return jsonify({'message': 'An error occurred while unliking the post'}), 500
+    
+
+if __name__ =='__main__':
+
+    #initialize db if it does not exisit    
 
     if not os.path.exists(DATABASE):
         init_db()
