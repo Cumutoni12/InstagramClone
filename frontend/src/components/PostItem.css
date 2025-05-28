@@ -62,3 +62,20 @@
   font-size: 0.7rem;
   text-transform: uppercase;
 }
+
+/* Add to PostItem.css */
+.post-actions .action-button {
+  /* Existing styles */
+  font-size: 1.5rem; /* Example size for icons */
+  display: flex; /* Align icon */
+  align-items: center;
+}
+
+.like-button {
+  /* Specific styles for like button if needed */
+}
+
+/* Add styles for the heart icon span if using text icons */
+.like-button span {
+  line-height: 1; /* Prevents extra space */
+}
