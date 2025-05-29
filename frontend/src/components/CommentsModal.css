@@ -1,0 +1,94 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Above other content */
+}
+
+.modal-content {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh; /* Limit height */
+  overflow-y: auto; /* Add scroll if content overflows */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.comments-list {
+  flex-grow: 1; /* Allow comment list to take available space */
+  margin-bottom: 20px; /* Space between comments and form */
+}
+
+.comment-item {
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.comment-item .comment-author {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.comment-item .comment-timestamp {
+  font-size: 0.7rem;
+  color: #8e8e8e;
+  margin-left: 10px;
+}
+
+.add-comment-form {
+  display: flex;
+  gap: 10px;
+  border-top: 1px solid #dbdbdb; /* Separator */
+  padding-top: 15px;
+}
+
+.add-comment-form input[type="text"] {
+  flex-grow: 1; /* Input takes most space */
+  padding: 8px;
+  border: 1px solid #dbdbdb;
+  border-radius: 3px;
+  font-size: 0.9rem;
+}
+
+.add-comment-form button {
+  background-color: #0095f6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 15px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.comment-auth-prompt {
+  text-align: center;
+  margin-top: 15px;
+  color: #8e8e8e;
+  font-size: 0.9rem;
+}

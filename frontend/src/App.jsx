@@ -11,20 +11,48 @@ import PostFeed from "./components/PostFeed"; // Import PostFeed
 import "./components/PostFeed.css"; // Import PostFeed styles
 import "./components/PostItem.css"; // Import PostItem styles (can import here or in PostFeed)
 
+import CommentsModal from "./components/CommentsModal.jsx";
+
 function App() {
   const { isAuthenticated, user, loading: authLoading, logout } = useAuth();
   const [showSignUp, setShowSignUp] = useState(false);
+  const [selectedPostIdForComments, setSelectedPostIdForComments] =
+    useState(null);
+  const [posts, setPosts] = useState([]);
 
   if (authLoading) {
     return <div className="loading-screen">Loading...</div>;
   }
+
+  // function to open comments modal
+  const handleViewComments = (postId) => {
+    setSelectedPostIdForComments(postId);
+  };
+
+  // function to close comments modal
+  const handleCloseComments = () => {
+    setSelectedPostIdForComments(null);
+  };
+
+  const handleCommentAdded = (postId, newCommentsCount) => {
+    setPosts((currentPosts) =>
+      currentPosts.map((post) =>
+        post.id === postId ? { ...post, commentsCount: newCommentsCount } : post
+      )
+    );
+  };
 
   return (
     <div className="app-container">
       <Header user={user} onLogout={logout} />
       <main className="app-main container">
         {isAuthenticated ? (
-          <PostFeed /> /* Render the PostFeed */
+          <PostFeed
+            onViewComments={handleViewComments}
+            onCommentAdded={handleCommentAdded}
+            posts={posts}
+            setPosts={setPosts}
+          />
         ) : (
           // ... auth forms ...
           <div className="auth-page-content">
@@ -60,6 +88,11 @@ function App() {
         )}
       </main>
       <Footer />
+      <CommentsModal
+        postId={selectedPostIdForComments}
+        onClose={handleCloseComments}
+        onCommentAdded={handleCommentAdded}
+      />
     </div>
   );
 }

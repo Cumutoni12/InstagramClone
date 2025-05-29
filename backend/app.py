@@ -183,10 +183,12 @@ def get_posts():
         SELECT
             p.id, p.user_id, p.image_url, p.caption, p.created_at,
             u.username AS author_username,
-            COUNT(l.id) AS likes_count -- Count likes for each post
+            COUNT(DISTINCT l.id) AS likes_count ,-- Count likes for each post
+            COUNT(DISTINCT c.id) AS comments_count -- Count distinct comments for each post
         FROM posts p
         JOIN users u ON p.user_id = u.id
         LEFT JOIN likes l ON p.id = l.post_id -- LEFT JOIN to include posts with 0 likes
+        LEFT JOIN comments c ON p.id = c.post_id -- LEFT JOIN to include posts with 0 comments
         GROUP BY p.id -- Group by post to count likes for each
         ORDER BY p.created_at DESC
     """)
@@ -203,7 +205,7 @@ def get_posts():
              'createdAt': post['created_at'],
              'authorUsername': post['author_username'],
              'likesCount': post['likes_count'], # Use the count from the query
-             'commentsCount': 0 # Placeholder for now
+             'commentsCount': post['comments_count']
          })
 
     return jsonify(posts_list)
@@ -318,6 +320,101 @@ def unlike_post(current_user, post_id):
         db.rollback()  # Rollback in case of error
         return jsonify({'message': 'An error occurred while unliking the post'}), 500
     
+@app.route('/posts/<int:post_id>/comments', methods=['GET'])
+# Optional: Make GET comments public or protected depending on requirements
+# @token_required
+def get_comments(post_id): # No user needed if public, add user if protected
+    db = get_db()
+    c = db.cursor()
+
+    # Check if post exists
+    c.execute("SELECT id FROM posts WHERE id = ?", (post_id,))
+    if c.fetchone() is None:
+         return jsonify({'message': 'Post not found'}), 404
+
+    # Select comments for this post, join users for author username
+    c.execute("""
+        SELECT
+            c.id, c.user_id, c.post_id, c.content, c.created_at,
+            u.username AS author_username
+        FROM comments c
+        JOIN users u ON c.user_id = u.id
+        WHERE c.post_id = ?
+        ORDER BY c.created_at ASC -- Display comments chronologically
+    """, (post_id,))
+    comments = c.fetchall()
+
+    comments_list = []
+    for comment in comments:
+        comments_list.append({
+            'id': comment['id'],
+            'userId': comment['user_id'],
+            'postId': comment['post_id'],
+            'content': comment['content'],
+            'createdAt': comment['created_at'],
+            'authorUsername': comment['author_username']
+        })
+
+    return jsonify(comments_list)
+
+@app.route('/posts/<int:post_id>/comments', methods=['POST'])
+@token_required # Protect this endpoint
+def add_comment(current_user, post_id): # Decorator passes user and post_id
+    data = request.json
+    content = data.get('content')
+
+    if not content or not content.strip():
+        return jsonify({'message': 'Comment content is required'}), 400
+
+    db = get_db()
+    c = db.cursor()
+    user_id = current_user['id']
+
+    try:
+        # Check if post exists
+        c.execute("SELECT id FROM posts WHERE id = ?", (post_id,))
+        if c.fetchone() is None:
+            return jsonify({'message': 'Post not found'}), 404
+
+        # Insert the comment
+        c.execute("INSERT INTO comments (user_id, post_id, content) VALUES (?, ?, ?)",
+                  (user_id, post_id, content))
+        db.commit()
+
+        # Optionally, fetch the created comment including its new ID and author username
+        comment_id = c.lastrowid
+        c.execute("""
+            SELECT c.id, c.user_id, c.post_id, c.content, c.created_at, u.username AS author_username
+            FROM comments c JOIN users u ON c.user_id = u.id WHERE c.id = ?
+        """, (comment_id,))
+        new_comment = c.fetchone()
+
+        if new_comment:
+             new_comment_dict = {
+                 'id': new_comment['id'],
+                 'userId': new_comment['user_id'],
+                 'postId': new_comment['post_id'],
+                 'content': new_comment['content'],
+                 'createdAt': new_comment['created_at'],
+                 'authorUsername': new_comment['author_username']
+             }
+             # Also get updated comment count for the post
+             c.execute("SELECT COUNT(id) AS comments_count FROM comments WHERE post_id = ?", (post_id,))
+             comments_count = c.fetchone()['comments_count']
+
+             return jsonify({
+                 'message': 'Comment added successfully',
+                 'comment': new_comment_dict,
+                 'commentsCount': comments_count # Include updated count
+             }), 201
+        else:
+             return jsonify({'message': 'Comment added, but could not retrieve data'}), 201
+
+
+    except Exception as e:
+         print(f"Error adding comment: {e}")
+         db.rollback()
+         return jsonify({'message': 'An error occurred while adding the comment'}), 500
 
 if __name__ =='__main__':
 

@@ -6,8 +6,7 @@ import CreatePostForm from "./CreatePostForm"; // Import the form
 import "./PostFeed.css";
 import "./CreatePostForm.css"; // Import form styles
 
-function PostFeed() {
-  const [posts, setPosts] = useState([]);
+function PostFeed({ onViewComments, onCommentAdded, posts, setPosts }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   // const { user } = useAuth(); // Use if you need auth headers for fetching feed (not for this endpoint currently)
@@ -25,8 +24,8 @@ function PostFeed() {
       const data = await response.json();
       setPosts(data);
       setError(null);
-    } catch (err) {
-      console.error("Error fetching posts:", err);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
       setError("Failed to load posts. Please try again later.");
     } finally {
       setLoading(false);
@@ -55,7 +54,9 @@ function PostFeed() {
       {posts.length === 0 ? (
         <div className="feed-message">No posts yet. Be the first to share!</div>
       ) : (
-        posts.map((post) => <PostItem key={post.id} post={post} />)
+        posts.map((post) => (
+          <PostItem key={post.id} post={post} onViewComments={onViewComments} />
+        ))
       )}
     </div>
   );

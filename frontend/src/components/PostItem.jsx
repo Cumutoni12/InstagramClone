@@ -10,7 +10,7 @@ const HeartIcon = ({ filled }) => (
   </span>
 );
 
-function PostItem({ post }) {
+function PostItem({ post, onViewComments }) {
   const { user, isAuthenticated } = useAuth(); // Need user to check if current user liked it
   const [isLiked, setIsLiked] = useState(false);
   const [currentLikesCount, setCurrentLikesCount] = useState(post.likesCount);
@@ -100,7 +100,7 @@ function PostItem({ post }) {
 
   // Basic date formatting
   const formatDate = (timestamp) => {
-    const date = new Date(timestamp);
+    // const Date = new Date(timestamp);
     // Adjust parsing for potential string formats from backend
     const dateObj = new Date(timestamp + "Z"); // Assume UTC if not specified
     if (isNaN(dateObj.getTime())) {
@@ -151,9 +151,15 @@ function PostItem({ post }) {
           <HeartIcon filled={isLiked} /> {/* Show heart icon */}
         </button>
         {/* Comment and Share icons/buttons will go here */}
-        <button className="action-button">💬</button>{" "}
+        <button
+          className="action-button"
+          onClick={() => onViewComments(post.id)}
+        >
+          💬
+        </button>
         {/* Placeholder Comment icon */}
         <button className="action-button">➡️</button>{" "}
+        {/* Placeholder Share icon */}
         {/* Placeholder Share icon */}
       </div>
       <div className="post-likes">
@@ -164,8 +170,15 @@ function PostItem({ post }) {
         {post.caption}
       </div>
       {/* Comments preview section (Day 10) */}
-      {/* <div className="post-comments-preview"> ... </div> */}
-
+      <div
+        className="post-comments-preview"
+        onClick={() => onViewComments(post.id)}
+      >
+        {/* Make the preview clickable */}
+        <span>
+          {post.commentsCount > 0 && <span>{post.commentsCount} comments</span>}
+        </span>
+      </div>
       <div className="post-timestamp">{formatDate(post.createdAt)}</div>
     </div>
   );
