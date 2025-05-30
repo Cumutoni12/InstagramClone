@@ -6,7 +6,6 @@ import jwt
 from datetime import datetime,timedelta
 from functools import wraps #need this for decorators
 from werkzeug.security import generate_password_hash, check_password_hash
-
 def token_required(f):
     @wraps(f) # Preserves original function's metadata
     def decorated(*args, **kwargs):

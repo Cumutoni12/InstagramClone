@@ -94,7 +94,7 @@ function CommentsModal({ postId, onClose, onCommentAdded }) {
       setComments([...comments, data.comment]);
       setCommentContent(""); // Clear the form
       if (onCommentAdded) {
-        onCommentAdded(postId, data.commentsCount); // Notify parent with post ID and new total count
+        onCommentAdded(postId, {commentsCount:data.commentsCount}); // Notify parent with post ID and new total count
       }
     } catch (err) {
       console.error(`Error adding comment to post ${postId}:`, err);

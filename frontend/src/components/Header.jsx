@@ -1,24 +1,43 @@
-import React from "react";
-import "./header.css"; // Assuming you have a CSS file for styling
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import "./header.css";
 
-function Header({ user, onLogout }) {
+function Header() {
+  const { user, isAuthenticated, logout } = useAuth();
+
   return (
     <header className="app-header">
       <div className="container">
         <div className="header-left">
-          <h1>InstagramClone</h1> {/* Or a logo */}
+          <Link to="/" className="site-title">
+            InstagramClone
+          </Link>
         </div>
+
         <div className="header-right">
-          {user ? (
+          {isAuthenticated ? (
             <div className="user-controls">
-              {/* Placeholder for navigation icons (Home, Create, Profile, etc.) */}
-              <span>Hello, {user.username}!</span> {/* Display username */}
-              <button onClick={onLogout} className="logout-button">
+              <Link to="/" className="nav-link">
+                🏠
+              </Link>
+              <Link to={`/profile/${user?.username}`} className="nav-link">
+                👤
+              </Link>
+              <span className="username">Hello, {user?.username}!</span>
+              <button onClick={logout} className="logout-button">
                 Logout
               </button>
             </div>
-          ) : // Optional: Placeholder for login/signup links if not on auth page
-          null}
+          ) : (
+            <div className="auth-links">
+              <Link to="/login" className="nav-link">
+                Login
+              </Link>
+              <Link to="/signup" className="nav-link">
+                Sign Up
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </header>

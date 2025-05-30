@@ -10,7 +10,7 @@ const HeartIcon = ({ filled }) => (
   </span>
 );
 
-function PostItem({ post, onViewComments }) {
+function PostItem({ post, onViewComments, onPostUpdate }) {
   const { user, isAuthenticated } = useAuth(); // Need user to check if current user liked it
   const [isLiked, setIsLiked] = useState(false);
   const [currentLikesCount, setCurrentLikesCount] = useState(post.likesCount);
@@ -74,6 +74,9 @@ function PostItem({ post, onViewComments }) {
       setIsLiked(!isLiked);
       setCurrentLikesCount(data.likesCount); // Update count from backend response
 
+      //notify parent(postFeed/AppRoutes)about the update
+
+      onPostUpdate(post.id, { likesCount: data.likeCount });
       // Simple local storage tracking (Optional, can be removed if backend fully tracks)
       const likedPosts = JSON.parse(
         localStorage.getItem("instaCloneLikedPosts") || "{}"

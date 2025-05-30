@@ -6,7 +6,14 @@ import CreatePostForm from "./CreatePostForm"; // Import the form
 import "./PostFeed.css";
 import "./CreatePostForm.css"; // Import form styles
 
-function PostFeed({ onViewComments, onCommentAdded, posts, setPosts }) {
+function PostFeed({
+  onPostCreated,
+  onViewComments,
+  onPostUpdate,
+  onCommentAdded,
+  posts,
+  setPosts,
+}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   // const { user } = useAuth(); // Use if you need auth headers for fetching feed (not for this endpoint currently)
@@ -55,7 +62,12 @@ function PostFeed({ onViewComments, onCommentAdded, posts, setPosts }) {
         <div className="feed-message">No posts yet. Be the first to share!</div>
       ) : (
         posts.map((post) => (
-          <PostItem key={post.id} post={post} onViewComments={onViewComments} />
+          <PostItem
+            key={post.id}
+            post={post}
+            onViewComments={onViewComments}
+            onPostUpdate={onPostUpdate}
+          />
         ))
       )}
     </div>
