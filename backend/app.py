@@ -3,7 +3,7 @@ from flask_cors import CORS
 import sqlite3
 import os
 import jwt
-from datetime import datetime,timedelta
+from datetime import datetime,timedelta,timezone
 from functools import wraps #need this for decorators
 from werkzeug.security import generate_password_hash, check_password_hash
 def token_required(f):
@@ -113,7 +113,7 @@ def signup():
         token_payload = {
                     'user_id': user_id,
                     'username': username,
-                    'exp': datetime.utcnow() + timedelta(days=1) # Token expires in 1 day
+                    'exp': datetime.now(timezone.utc) + timedelta(days=1) # Token expires in 1 day
                 }
         token = jwt.encode(token_payload, app.config['SECRET_KEY'], algorithm='HS256')
 
@@ -151,7 +151,7 @@ def login():
         token_payload = {
             'user_id': user['id'],
             'username': user['username'],
-            'exp': datetime.utcnow() + timedelta(days=1) # Token expires in 1 day
+            'exp': datetime.now(timezone.utc) + timedelta(days=1) # Token expires in 1 day
         }
         token = jwt.encode(token_payload, app.config['SECRET_KEY'], algorithm='HS256')
 
