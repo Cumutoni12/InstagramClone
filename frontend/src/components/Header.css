@@ -1,11 +1,12 @@
 .app-header {
   background-color: #ffffff;
-  border-bottom: 1px solid #eaeaea;
-  padding: 10px 0;
+  border-bottom: 1px solid #dbdbdb;
+  padding: 12px 0;
   position: fixed; /* keep header visible */
   top: 0;
   z-index: 100;
   width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .app-header h1 {
@@ -17,9 +18,106 @@
 /*add flexbox to header container here*/
 .app-header .container {
   display: flex;
-  justify-content: center; /* center for now*/
+  justify-content: space-between;
   align-items: center;
-  max-width: 935px;
+  max-width: 975px;
   margin: 0 auto;
   padding: 0 20px;
+}
+
+.site-title {
+  color: #262626;
+  text-decoration: none;
+  font-size: 24px;
+  font-weight: 600;
+  font-family: "Instagram Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.user-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-link {
+  color: #262626;
+  text-decoration: none;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  transition: opacity 0.2s ease;
+}
+
+.nav-link:hover {
+  opacity: 0.7;
+}
+
+.header-username {
+  color: #262626;
+  font-size: 22px;
+  font-weight:500;
+}
+
+.logout-button {
+  background: transparent;
+  border: 1px solid #0095f6;
+  color: #0095f6;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.logout-button:hover {
+  background-color: rgba(0, 149, 246, 0.1);
+  text-decoration: none;
+}
+
+.auth-links {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.auth-links .nav-link {
+  font-size: 10px;
+  font-weight: 200;
+  padding: 7px 16px;
+  border-radius: 4px;
+}
+
+.auth-links .nav-link:first-child {
+  background-color: #0095f6;
+  color: white;
+}
+
+.auth-links .nav-link:last-child {
+  border: 1px solid #0095f6;
+  color: #0095f6;
+}
+
+.auth-links .nav-link:first-child:hover {
+  background-color: #1877f2;
+  opacity: 1;
+}
+
+.auth-links .nav-link:last-child:hover {
+  background-color: rgba(0, 149, 246, 0.1);
+  opacity: 1;
+}
+
+@media (max-width: 640px) {
+  .username {
+    display: none;
+  }
+
+  .user-controls {
+    gap: 15px;
+  }
+
+  .nav-link {
+    font-size: 22px;
+  }
 }

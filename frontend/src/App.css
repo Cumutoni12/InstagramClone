@@ -60,16 +60,3 @@ body {
 .user-controls span {
   font-weight: bold;
 }
-
-.logout-button {
-  background: none;
-  border: none;
-  color: #0095f6;
-  cursor: pointer;
-  padding: 0;
-  margin: 0;
-  font-weight: bold;
-}
-.logout-button:hover {
-  text-decoration: underline;
-}

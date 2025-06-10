@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import "./header.css";
+import "./Header.css";
 
 function Header() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -18,12 +18,21 @@ function Header() {
           {isAuthenticated ? (
             <div className="user-controls">
               <Link to="/" className="nav-link">
-                🏠
+                <span role="img" aria-label="Home">
+                  🏠
+                </span>
+              </Link>
+              <Link to="/create" className="nav-link">
+                <span role="img" aria-label="Create post">
+                  ➕
+                </span>
               </Link>
               <Link to={`/profile/${user?.username}`} className="nav-link">
-                👤
+                <span role="img" aria-label="Profile">
+                  👤
+                </span>
               </Link>
-              <span className="username">Hello, {user?.username}!</span>
+              <span className="header-username">{user?.username}</span>
               <button onClick={logout} className="logout-button">
                 Logout
               </button>
@@ -31,10 +40,10 @@ function Header() {
           ) : (
             <div className="auth-links">
               <Link to="/login" className="nav-link">
-                Login
+                Log in
               </Link>
               <Link to="/signup" className="nav-link">
-                Sign Up
+                Sign up
               </Link>
             </div>
           )}

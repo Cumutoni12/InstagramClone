@@ -7,6 +7,9 @@
   text-align: center;
   padding: 40px;
   box-sizing: border-box; /* include padding and border in element's total width */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  animation: slideUp 0.3s ease-out;
 }
 
 .auth-form h2 {
@@ -28,6 +31,16 @@
     /* include padding and border in element's total width*/;
   background-color: #fafafa;
   color: #262626;
+  height: 44px;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.auth-form input:focus {
+  border-color: #0095f6;
+  box-shadow: 0 0 0 2px rgba(0, 149, 246, 0.2);
+  outline: none;
+  background-color: white;
 }
 
 .auth-form button {
@@ -41,10 +54,18 @@
   cursor: pointer;
   margin-top: 10px;
   transition: background-color 0.2s ease in-out;
+  height: 44px;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .auth-form button:hover:not(:disabled) {
   background-color: #0078d7;
+}
+
+.auth-form button:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 .auth-form button:disabled {
@@ -85,4 +106,15 @@
 
 .auth-switch .switch-button:hover {
   text-decoration: underline;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

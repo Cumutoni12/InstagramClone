@@ -1,10 +1,36 @@
 .post-feed {
-  padding-top: 40px; /* Space below header */
-  padding-bottom: 40px; /* Space above footer */
+  padding: 60px 0;
+  max-width: 600px;
+  min-width: 345px;
+  margin: 0 auto;
+  animation: fadeIn 0.3s ease-in;
 }
 
 .feed-message {
-   text-align: center;
-   margin-top: 50px;
-   color: #8e8e8e;
+  text-align: center;
+  margin: 80px 0;
+  color: #8e8e8e;
+  font-size: 16px;
+  line-height: 1.5;
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .post-feed {
+    padding: 40px 0;
+  }
 }

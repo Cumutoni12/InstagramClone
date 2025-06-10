@@ -4,6 +4,9 @@
   margin: 40px auto; /* Center and add space */
   padding: 20px;
   max-width: 600px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  transition: transform 0.2s ease;
 }
 
 .create-post-container h3 {
@@ -23,6 +26,7 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
+  position: relative;
 }
 
 .create-post-form label {
@@ -37,10 +41,19 @@
   border: 1px solid #dbdbdb;
   border-radius: 3px;
   background-color: #fafafa;
-  font-size: 1rem;
+  font-size: 14px;
   font-family: inherit; /* Use app font */
   width: 100%;
   box-sizing: border-box;
+  min-height: 40px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.create-post-form input[type="text"]:focus,
+.create-post-form textarea:focus {
+  border-color: #0095f6;
+  box-shadow: 0 0 0 2px rgba(0, 149, 246, 0.2);
+  outline: none;
 }
 
 .create-post-form button {
@@ -53,11 +66,18 @@
   border-radius: 4px;
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  height: 36px;
+  font-size: 14px;
+  letter-spacing: 0.5px;
 }
 
 .create-post-form button:hover:not(:disabled) {
   background-color: #0078d7;
+}
+
+.create-post-form button:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 .create-post-form button:disabled {
